@@ -1,0 +1,6 @@
+framework module AppSkaleSDK {
+  umbrella header "AppSkaleSDK-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,16 @@
+PODS:
+  - AppSkaleSDK (0.1.0)
+
+DEPENDENCIES:
+  - AppSkaleSDK (from `../`)
+
+EXTERNAL SOURCES:
+  AppSkaleSDK:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  AppSkaleSDK: bfaf2e5b94e0d8817866408e9d39c9ef1b984e05
+
+PODFILE CHECKSUM: 6b96ddad5860ba910a52b4fef6a51d5b6f91d888
+
+COCOAPODS: 1.16.2

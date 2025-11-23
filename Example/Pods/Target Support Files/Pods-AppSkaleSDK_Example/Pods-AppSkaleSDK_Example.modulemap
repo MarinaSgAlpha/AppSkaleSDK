@@ -1,0 +1,6 @@
+framework module Pods_AppSkaleSDK_Example {
+  umbrella header "Pods-AppSkaleSDK_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}
