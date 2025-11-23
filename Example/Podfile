@@ -1,0 +1,13 @@
+use_frameworks!
+
+platform :ios, '10.0'
+
+target 'AppSkaleSDK_Example' do
+  pod 'AppSkaleSDK', :path => '../'
+
+  target 'AppSkaleSDK_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
