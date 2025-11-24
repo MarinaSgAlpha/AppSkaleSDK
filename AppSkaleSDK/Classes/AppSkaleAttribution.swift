@@ -64,9 +64,17 @@ public class AppSkaleAttribution {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        // Get app info
+        let appName = Bundle.main.infoDictionary?["CFBundleDisplayName"] as? String
+                        ?? Bundle.main.infoDictionary?["CFBundleName"] as? String
+                        ?? "Unknown"
+        let bundleId = Bundle.main.bundleIdentifier ?? "unknown"
+
         let payload: [String: Any] = [
             "attribution_token": token,
-            "timestamp": ISO8601DateFormatter().string(from: Date())
+            "timestamp": ISO8601DateFormatter().string(from: Date()),
+            "app_name": appName,
+            "bundle_id": bundleId
         ]
         
         request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
@@ -121,7 +129,7 @@ public class AppSkaleAttribution {
         price: Double,
         currency: String
     ) {
-        let transactionId = transaction.transactionIdentifier ?? "unknown"
+        let transactionId = transaction.transactionIdentifier ?? "unknown_\(UUID().uuidString)"
         let productId = transaction.payment.productIdentifier
         
         trackPurchase(
@@ -171,12 +179,20 @@ public class AppSkaleAttribution {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        // Get app info
+        let appName = Bundle.main.infoDictionary?["CFBundleDisplayName"] as? String
+                        ?? Bundle.main.infoDictionary?["CFBundleName"] as? String
+                        ?? "Unknown"
+        let bundleId = Bundle.main.bundleIdentifier ?? "unknown"
+
         var payload: [String: Any] = [
             "transaction_id": transactionId,
             "product_id": productId,
             "price": price,
             "currency": currency,
-            "purchased_at": ISO8601DateFormatter().string(from: Date())
+            "purchased_at": ISO8601DateFormatter().string(from: Date()),
+            "app_name": appName,
+            "bundle_id": bundleId
         ]
         
         // Add attribution data if available
