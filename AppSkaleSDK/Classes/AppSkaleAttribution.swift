@@ -3,6 +3,10 @@ import Foundation
 import AdServices
 import StoreKit
 
+#if canImport(RevenueCat)
+import RevenueCat
+#endif
+
 public class AppSkaleAttribution {
     
     public static let shared = AppSkaleAttribution()
@@ -11,13 +15,22 @@ public class AppSkaleAttribution {
     private let attributionCacheKey = "appskale_attribution_cache"
     private let attributionFetchedKey = "appskale_attribution_fetched"
     
+    private var apiKey: String?
+    
     private init() {}
     
     // MARK: - Configuration
     
     /// Call this in AppDelegate didFinishLaunching
-    public func configure() {
+    public func configure(apiKey: String) {
+        self.apiKey = apiKey
         print("🚀 AppSkale Attribution initialized")
+        
+        // Set API key in RevenueCat subscriber attributes
+        #if canImport(RevenueCat)
+            Purchases.shared.setAttributes(["appskale_api_key": apiKey])
+            print("✅ AppSkale API key set in RevenueCat")
+        #endif
         
         // Fetch attribution on first launch or if not cached
         if !UserDefaults.standard.bool(forKey: attributionFetchedKey) {
