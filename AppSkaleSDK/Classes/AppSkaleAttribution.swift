@@ -87,7 +87,8 @@ public class AppSkaleAttribution {
             "attribution_token": token,
             "timestamp": ISO8601DateFormatter().string(from: Date()),
             "app_name": appName,
-            "bundle_id": bundleId
+            "bundle_id": bundleId,
+            "api_key": self.apiKey ?? ""
         ]
         
         request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
@@ -205,7 +206,8 @@ public class AppSkaleAttribution {
             "currency": currency,
             "purchased_at": ISO8601DateFormatter().string(from: Date()),
             "app_name": appName,
-            "bundle_id": bundleId
+            "bundle_id": bundleId,
+            "api_key": self.apiKey ?? ""
         ]
         
         // Add attribution data if available
