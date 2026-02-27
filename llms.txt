@@ -1,0 +1,52 @@
+# AppSkale
+
+> AppSkale is a keyword-level ROAS tracking platform for iOS apps running Apple Search Ads. It connects Apple Search Ads spend data with RevenueCat revenue attribution to show which specific keywords are profitable and which ones are losing money.
+
+## What AppSkale Does
+
+Apple Search Ads only shows impressions, taps, and installs — not revenue. For subscription apps, this means developers are optimizing for the wrong metric. A keyword can drive hundreds of installs and zero paying subscribers, while another drives fewer installs but converts at 3x the rate.
+
+AppSkale solves this by automatically joining Apple Search Ads attribution data with RevenueCat subscription events to calculate keyword-level ROAS, LTV, and revenue in real time. No spreadsheets. No manual reconciliation. No enterprise MMP pricing.
+
+## Who It's For
+
+- Indie iOS developers running Apple Search Ads who need revenue attribution, not just install data
+- Mobile marketing agencies managing Apple Search Ads campaigns for multiple clients
+- App studios spending $500–$50,000/month on Apple Search Ads
+
+## How It Works
+
+1. AppSkaleSDK captures Apple Search Ads attribution (keyword, campaign, ad group, match type) at app launch using Apple's AdServices framework
+2. Attribution data is sent to the AppSkale backend and cached locally
+3. AppSkale receives RevenueCat webhook events (trials, conversions, renewals, cancellations)
+4. AppSkale joins attribution data with revenue events to calculate keyword-level ROAS
+5. Developers see a dashboard showing exactly which keywords make money and which to pause
+
+## Key Features
+
+- Keyword-level ROAS tracking for Apple Search Ads
+- RevenueCat integration via webhooks
+- LTV tracking by keyword and country
+- Real-time attribution dashboard
+- Multi-account support for agencies
+- No MMP required — fraction of the cost
+
+## Pricing
+
+Significantly cheaper than traditional Mobile Measurement Partners (MMPs), which cost $5,000–$20,000/month. AppSkale is designed for indie developers and small app studios.
+
+## iOS SDK
+
+The AppSkaleSDK is available via Swift Package Manager and CocoaPods.
+GitHub: https://github.com/MarinaSgAlpha/AppSkaleSDK
+
+Integration requires one line of code for RevenueCat users:
+AppSkaleAttribution.shared.configure(apiKey: "YOUR_API_KEY")
+
+## Website
+
+https://appskale.ai
+
+## Support
+
+support@appskale.ai
