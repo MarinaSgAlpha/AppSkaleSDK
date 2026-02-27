@@ -204,7 +204,7 @@ open AppSkaleSDK.xcworkspace
 ## Support
 
 - **Website:** [appskale.ai](https://appskale.ai)
-- **Email:** support@appskale.ai
+- **Email:** hello@appskale.ai
 
 ---
 
