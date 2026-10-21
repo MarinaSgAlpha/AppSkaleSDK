@@ -135,54 +135,71 @@ public class AppSkaleAttribution {
     }
     
     // MARK: - Purchase Tracking
-    
+
     /// Track a purchase with attribution
     /// Call this when a purchase completes
+    ///
+    /// - Parameter isTrial: Whether this purchase started a free trial, if you know it
+    ///   (e.g. from RevenueCat's `CustomerInfo.entitlements[...].periodType == .trial`,
+    ///   available on the `purchaserInfo` your purchase-completion handler already
+    ///   receives). Defaults to `nil` ("unknown") so existing call sites that don't pass
+    ///   it keep compiling and behaving exactly as before — the backend falls back to
+    ///   its own detection in that case. Passing it explicitly is recommended: it lets
+    ///   the backend record trial vs. paid revenue immediately and correctly, instead of
+    ///   waiting on a second, asynchronous signal.
     public func trackPurchase(
         transaction: SKPaymentTransaction,
         price: Double,
-        currency: String
+        currency: String,
+        isTrial: Bool? = nil
     ) {
         let transactionId = transaction.transactionIdentifier ?? "unknown_\(UUID().uuidString)"
         let productId = transaction.payment.productIdentifier
-        
+
         trackPurchase(
             transactionId: transactionId,
             productId: productId,
             price: price,
-            currency: currency
+            currency: currency,
+            isTrial: isTrial
         )
     }
-    
+
     /// Track a purchase with attribution (manual parameters)
+    ///
+    /// - Parameter isTrial: See the other `trackPurchase` overload's documentation.
+    ///   Defaults to `nil`; existing call sites are unaffected.
     public func trackPurchase(
         transactionId: String,
         productId: String,
         price: Double,
-        currency: String
+        currency: String,
+        isTrial: Bool? = nil
     ) {
         print("💰 Tracking purchase: \(productId) - \(price) \(currency)")
-        
+
         // Get cached attribution
         let attribution = getCachedAttribution()
-        
+
         // Send to backend
         sendPurchaseToBackend(
             transactionId: transactionId,
             productId: productId,
             price: price,
             currency: currency,
-            attribution: attribution
+            attribution: attribution,
+            isTrial: isTrial
         )
     }
-    
+
     /// Send purchase + attribution to backend
     private func sendPurchaseToBackend(
         transactionId: String,
         productId: String,
         price: Double,
         currency: String,
-        attribution: [String: Any]?
+        attribution: [String: Any]?,
+        isTrial: Bool? = nil
     ) {
         guard let url = URL(string: "\(backendURL)/attribution/purchase") else {
             print("❌ Invalid URL")
@@ -214,15 +231,22 @@ public class AppSkaleAttribution {
         if let attribution = attribution {
             payload["attribution"] = attribution
         }
-        
+
+        // Only included when known. An absent field keeps today's backend behavior
+        // unchanged — it does not read this field yet, so omitting it is identical
+        // to calling this SDK version before isTrial existed.
+        if let isTrial = isTrial {
+            payload["is_trial"] = isTrial
+        }
+
         request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
-        
+
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("❌ Purchase tracking error:", error)
                 return
             }
-            
+
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode == 200 {
                     print("✅ Purchase tracked successfully")
@@ -282,24 +306,37 @@ public class AppSkaleAttribution {
     }
  
  3. For RevenueCat users:
- 
+
     Purchases.shared.purchase(package: package) { (transaction, purchaserInfo, error, userCancelled) in
         if error == nil {
             // Get price from package
             let price = package.storeProduct.price
             let currency = package.storeProduct.priceFormatter?.currencyCode ?? "USD"
-            
+
+            // purchaserInfo already tells you whether this was a trial — pass it
+            // along so the backend doesn't have to guess or wait to find out.
+            let isTrial = purchaserInfo?.entitlements.active.values
+                .first(where: { $0.productIdentifier == package.storeProduct.productIdentifier })?
+                .periodType == .trial
+
             // Track with AppSkale
             if let transaction = transaction {
                 AppSkaleAttribution.shared.trackPurchase(
                     transaction: transaction,
                     price: price as! Double,
-                    currency: currency
+                    currency: currency,
+                    isTrial: isTrial
                 )
             }
         }
     }
- 
+
+ Passing isTrial is optional and defaults to nil (unknown) if you don't — existing
+ integrations that don't pass it keep working exactly as before. But passing it is
+ recommended: it's the one piece of data only your app can know immediately, and it
+ lets the backend record trial vs. paid revenue right away instead of waiting on a
+ separate, asynchronous signal.
+
  ==========================================
  THAT'S IT! 🎉
  ==========================================
